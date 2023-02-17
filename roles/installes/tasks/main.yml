@@ -1,0 +1,29 @@
+---
+- name: fetch nvm setup
+  ansible.builtin.uri:
+    url: https://raw.githubusercontent.com/creationix/nvm/master/install.sh
+    return_content: yes
+  register: nvm_installer
+
+- name: run nvm installer
+  ansible.builtin.shell:
+    cmd: bash -s -- -y
+    stdin: "{{ nvm_installer.content }}"
+
+- name: source profile
+  shell: /bin/bash -lc "source ~/.profile"
+
+- name: install nodejs
+  shell: /bin/bash -lc "nvm install v16"
+
+- name: bootstrap directory create
+  file:
+    path: ~/symbol-bootstrap
+    state: directory
+    owner: user
+    mode: "777"
+
+- name: Install "bootstrap" node.js package.
+  npm:
+    name: symbol-bootstrap
+    global: true

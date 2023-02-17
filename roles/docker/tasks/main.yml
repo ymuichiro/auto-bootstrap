@@ -1,0 +1,54 @@
+- name: apt updateを実行します
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Dockerのインストールに必要なパッケージをインストールします
+  become: true
+  apt:
+    name:
+      - git
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: present
+
+- name: DockerリポジトリのGPGキーをシステムに追加します
+  become: true
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: DockerリポジトリをAPTソースに追加します
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: apt updateを実行します
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Dockerをインストールします
+  become: true
+  apt:
+    name: docker-ce
+  notify:
+    - add_user_to_docker_group
+    - restart_docker_daemon
+  changed_when: yes
+
+- name: Docker compose v1 をダウンロードする
+  become: true
+  ansible.builtin.get_url:
+    dest: /usr/local/bin/docker-compose
+    url: https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-linux-x86_64
+
+- name: Docker compose v1 の権限を付与
+  ansible.builtin.file:
+    path: /usr/local/bin/docker-compose
+    mode: 0777
+
+- meta: flush_handlers

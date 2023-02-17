@@ -1,0 +1,8 @@
+---
+- name: user create
+  user:
+    system: yes
+    name: user
+    group: sudo
+    password: password
+    state: present

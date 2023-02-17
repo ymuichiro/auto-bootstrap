@@ -1,0 +1,12 @@
+- name: add_user_to_docker_group
+  become: true
+  user:
+    name: user
+    groups: docker
+    append: yes
+
+- name: restart_docker_daemon
+  become: true
+  service:
+    name: docker
+    state: restarted

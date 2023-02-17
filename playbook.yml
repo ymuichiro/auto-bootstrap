@@ -1,0 +1,7 @@
+---
+- hosts: server
+  roles:
+    - role: adduser
+      become: true
+    - role: docker
+    - role: installes
